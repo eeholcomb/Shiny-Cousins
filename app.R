@@ -47,37 +47,41 @@ ui <- dashboardPage(skin="black", title="Pheno 0 Analysis",
                         tabsetPanel(
                           tabPanel("Drought Analysis",
                                    br(),
-                                   fluidRow(
-                                     box(title="Preview Drought Data",width=8,solidHeader = T,status = 'success')
-                                   ),
-                                   fluidRow(
-                                     box(width=8,title="some plot",solidHeader = T,status = "success")
-                                   ),
-                                   fluidRow(
+                                   column(width=12,
+                                     box(title="Preview Drought Data",width=8,solidHeader = T,status = 'success',
+                                         actionButton("n_merge_data","Merge")
+                                     ),
+                                     box(width=8,title="some plot",solidHeader = T,status = "success"),
                                      box(width=8,title="some plot 2",solidHeader=T,status="success")
                                    )
                           ),
                           tabPanel("Nitrogen Analysis", 
-                                   fixedRow(
                                      br(),
-                                     box(title="Preview Nitrogen Data",width=8,solidHeader = T,status = 'success')
-                                   ),
-                                   fluidRow(
-                                     box(title="some plot",width=8,solidHeader = T,status = 'success')
-                                   ),
-                                   fluidRow(
+                                   column(width=12,
+                                     box(title="Preview Nitrogen Data",width=8,solidHeader = T,status = 'success',
+                                         actionButton("d_merge_data","Merge")
+                                     ),
+                                     box(title="some plot",width=8,solidHeader = T,status = 'success'),
                                      box(width=8,title="some plot",solidHeader = T,status = "success")
                                    )
-                            )
                           )
                         )
                       )
                     )
+                  )
 
 server <- function(input, output){
 
+  n_merged <- reactiveValues(data=NULL)
   
+  observeEvent(input$n_merge_data,{
+    n_sv_shapes <- read.csv("data/nitrogen/bart_sorghum_systems_download.csv",header=T,sep=",",stringsAsFactors=F)
+    n_n_isotopes <- read.csv("data/nitrogen/sorghum_systems_download.csv",header=T,sep=",",stringsAsFactors=F)
+    n_merged <- join(n_isotopes, sv_shapes,by="Barcodes")
+    n_merged <- merged[!colnames(merged) %in% c("PlantID.1","marker_area","percent_below_bound_area","project","Camera","ExperimentCode","Type","last_updated.1","Nitrogen","Geno.1")]
   
+    n_merged$data <- n_merged
+  })
   
   }
 
